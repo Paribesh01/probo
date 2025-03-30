@@ -1,6 +1,8 @@
 export enum requestTypes {
   CREATESYMBOL = "createSymbol",
   CREATEUSER = "createUser",
+  BUYOPTIONS = "buyOptions",
+  SELLOPTIONS = "sellOptions",
 }
 
 export let ORDERBOOK: Record<string, OrderBook> = {};
@@ -25,8 +27,10 @@ export interface StockOption {
 }
 
 export interface StockBalance {
-  yes?: StockOption;
-  no?: StockOption;
+  [stockSymbol: string]: {
+    yes?: StockOption;
+    no?: StockOption;
+  };
 }
 
 export interface IndividualEntry {
