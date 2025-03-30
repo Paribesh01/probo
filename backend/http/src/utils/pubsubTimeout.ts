@@ -5,7 +5,7 @@ export const handlePubSubWithTimeout = (
   timeoutMs: number
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const channel = `response.${uid}`;
+    const channel = uid;
 
     const timeout = setTimeout(() => {
       sub.unsubscribe(channel);

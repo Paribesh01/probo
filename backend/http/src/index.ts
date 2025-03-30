@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.use("api/v1", routes);
+app.use("/api/v1", routes);
 
 async function main() {
   try {
