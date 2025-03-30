@@ -8,7 +8,7 @@ export const createUser = async (userId: string) => {
     };
   }
   INR_BALANCE[userId] = {
-    balance: 10000000000,
+    balance: 0,
     locked: 0,
   };
 

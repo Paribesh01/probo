@@ -3,9 +3,14 @@ export enum requestTypes {
   CREATEUSER = "createUser",
   BUYOPTIONS = "buyOptions",
   SELLOPTIONS = "sellOptions",
+  RESET = "reset",
+  ONRAMPINR = "onrampInr",
+  GETINRBALANCE = "getInrBalance",
+  GETORDERBOOK = "getOrderbook",
 }
 
 export let ORDERBOOK: Record<string, OrderBook> = {};
+
 export let INR_BALANCE: INR_BALANCE = {};
 export let STOCK_BALANCE: Record<string, StockBalance> = {};
 

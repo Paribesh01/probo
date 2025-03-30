@@ -23,7 +23,7 @@ export const createUser = async (req: Request, res: Response) => {
     };
 
     await pub.lPush("request", JSON.stringify(data));
-    const response = await handlePubSubWithTimeout(id, 5000);
+    const response = await handlePubSubWithTimeout(id, 10000);
 
     res.json(JSON.parse(response));
   } catch (err) {

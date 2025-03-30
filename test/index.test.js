@@ -1,8 +1,8 @@
 const axios = require("axios");
 const WebSocket = require("ws");
 
-const HTTP_SERVER_URL = "http://localhost:3000";
-const WS_SERVER_URL = process.env.WS_URL;
+const HTTP_SERVER_URL = "http://localhost:3000/api/v1";
+const WS_SERVER_URL = "ws://localhost:8085";
 
 describe("Trading System Tests", () => {
   let ws;
@@ -32,7 +32,7 @@ describe("Trading System Tests", () => {
 
   test("Create user, onramp INR, and check balance", async () => {
     const userId = "testUser1";
-    await axios.post(`${HTTP_SERVER_URL}/user/create/${userId}`);
+    await axios.post(`${HTTP_SERVER_URL}/user/create`, { userId });
 
     const onrampResponse = await axios.post(`${HTTP_SERVER_URL}/onramp/inr`, {
       userId,
@@ -44,28 +44,35 @@ describe("Trading System Tests", () => {
     const balanceResponse = await axios.get(
       `${HTTP_SERVER_URL}/balance/inr/${userId}`
     );
-    expect(balanceResponse.data.msg).toEqual({ balance: 1000000, locked: 0 });
+    expect(balanceResponse.data).toEqual({ balance: 1000000, locked: 0 });
   });
 
   test("Create symbol and check orderbook", async () => {
     const symbol = "TEST_SYMBOL_30_Dec_2024";
-    await axios.post(`${HTTP_SERVER_URL}/symbol/create/${symbol}`);
-
+    await axios.post(`${HTTP_SERVER_URL}/symbol/create`, { symbol });
+    console.log(`${HTTP_SERVER_URL}/orderbook/${symbol}`);
     const orderbookResponse = await axios.get(
       `${HTTP_SERVER_URL}/orderbook/${symbol}`
     );
-    expect(orderbookResponse.data.msg).toEqual({ yes: {}, no: {} });
+
+    console.log(orderbookResponse.data);
+
+    expect(orderbookResponse.data).toEqual({ yes: {}, no: {} });
   });
 
   test("Place buy order for yes stock and check WebSocket response", async () => {
     const userId = "testUser2";
     const symbol = "BTC_USDT_10_Oct_2024_9_30";
-    await axios.post(`${HTTP_SERVER_URL}/user/create/${userId}`);
-    await axios.post(`${HTTP_SERVER_URL}/symbol/create/${symbol}`);
+    console.log("1111111111111111111111");
+    await axios.post(`${HTTP_SERVER_URL}/user/create`, { userId });
+    console.log("2222222222222222222222");
+    await axios.post(`${HTTP_SERVER_URL}/symbol/create`, { symbol });
+    console.log("3333333333333333333333");
     await axios.post(`${HTTP_SERVER_URL}/onramp/inr`, {
       userId,
       amount: 1000000,
     });
+    console.log("4444444444444444444444");
 
     await ws.send(
       JSON.stringify({
@@ -73,8 +80,10 @@ describe("Trading System Tests", () => {
         stockSymbol: "BTC_USDT_10_Oct_2024_9_30",
       })
     );
+    console.log("5555555555555555555555");
 
     const promisified = waitForWSMessage();
+    console.log("6666666666666666666666");
 
     const buyOrderResponse = await axios.post(`${HTTP_SERVER_URL}/order/buy`, {
       userId,
@@ -83,8 +92,11 @@ describe("Trading System Tests", () => {
       price: 850,
       stockType: "yes",
     });
+    console.log("7777777777777777777777");
 
     const wsMessage = await promisified;
+    console.log(wsMessage);
+    console.log("8888888888888888888888");
 
     expect(buyOrderResponse.status).toBe(200);
     expect(wsMessage.event).toBe("event_orderbook_update");

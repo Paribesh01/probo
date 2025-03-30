@@ -2,6 +2,10 @@ import { sub } from "..";
 import { buyOptions, sellOptions } from "../controllers/buySellOptions";
 import { createSymbol } from "../controllers/createSymbol";
 import { createUser } from "../controllers/createUser";
+import { getInrBalance } from "../controllers/getInrBalance";
+import { getOrderbook } from "../controllers/getOrderBook";
+import { onrampInr } from "../controllers/rampInr";
+import { reset } from "../controllers/reset";
 import { requestTypes } from "../types";
 
 export const processOrder = async (request: any) => {
@@ -43,6 +47,31 @@ export const processOrder = async (request: any) => {
         request.payload.orderType
       );
       await sub.publish(request.id, JSON.stringify(result4));
+      break;
+
+    case requestTypes.RESET:
+      console.log("Resetting");
+      const result5 = await reset();
+      console.log(result5);
+      await sub.publish(request.id, JSON.stringify(result5));
+      break;
+    case requestTypes.ONRAMPINR:
+      console.log("Onramping INR");
+      const result6 = await onrampInr(
+        request.payload.userId,
+        request.payload.amount
+      );
+      await sub.publish(request.id, JSON.stringify(result6));
+      break;
+    case requestTypes.GETINRBALANCE:
+      console.log("Getting INR balance");
+      const result7 = await getInrBalance(request.payload.userId);
+      await sub.publish(request.id, JSON.stringify(result7));
+      break;
+    case requestTypes.GETORDERBOOK:
+      console.log("Getting orderbook");
+      const result8 = await getOrderbook(request.payload.symbol);
+      await sub.publish(request.id, JSON.stringify(result8));
       break;
     default:
       console.log("Unknown request type");
