@@ -29,7 +29,7 @@ export const onrampInr = async (req: Request, res: Response) => {
     };
 
     await pub.lPush("request", JSON.stringify(data));
-    const response = await handlePubSubWithTimeout(id, 10000);
+    const response = await handlePubSubWithTimeout(id, 5000);
 
     res.json(JSON.parse(response));
   } catch (err) {

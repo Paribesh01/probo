@@ -4,6 +4,8 @@ import { createSymbol } from "../controllers/createSymbol";
 import { createUser } from "../controllers/createUser";
 import { getInrBalance } from "../controllers/getInrBalance";
 import { getOrderbook } from "../controllers/getOrderBook";
+import { getStockBalance } from "../controllers/getStockBalance";
+import { mintTrade } from "../controllers/mintTrade";
 import { onrampInr } from "../controllers/rampInr";
 import { reset } from "../controllers/reset";
 import { requestTypes } from "../types";
@@ -25,13 +27,13 @@ export const processOrder = async (request: any) => {
       console.log("Published to channel:", request.id);
       break;
     case requestTypes.BUYOPTIONS:
-      console.log("Buying options:", request.payload.userId);
+      console.log("Buying options:", request.payload);
       const result3 = await buyOptions(
         request.payload.userId,
         request.payload.stockSymbol,
         request.payload.quantity,
         request.payload.price,
-        request.payload.orderType
+        request.payload.stockType
       );
       await sub.publish(request.id, JSON.stringify(result3));
       console.log("Published to channel:", request.id);
@@ -44,7 +46,7 @@ export const processOrder = async (request: any) => {
         request.payload.stockSymbol,
         request.payload.quantity,
         request.payload.price,
-        request.payload.orderType
+        request.payload.stockType
       );
       await sub.publish(request.id, JSON.stringify(result4));
       break;
@@ -72,6 +74,20 @@ export const processOrder = async (request: any) => {
       console.log("Getting orderbook");
       const result8 = await getOrderbook(request.payload.symbol);
       await sub.publish(request.id, JSON.stringify(result8));
+      break;
+    case requestTypes.MINTTRADE:
+      console.log("Minting trade");
+      const result9 = await mintTrade(
+        request.payload.userId,
+        request.payload.stockSymbol,
+        request.payload.quantity
+      );
+      await sub.publish(request.id, JSON.stringify(result9));
+      break;
+    case requestTypes.GETSTOCKBALANCE:
+      console.log("Getting stock balance");
+      const result10 = await getStockBalance(request.payload.userId);
+      await sub.publish(request.id, JSON.stringify(result10));
       break;
     default:
       console.log("Unknown request type");

@@ -7,4 +7,6 @@ export enum requestTypes {
   ONRAMPINR = "onrampInr",
   GETINRBALANCE = "getInrBalance",
   GETORDERBOOK = "getOrderbook",
+  MINTTRADE = "mintTrade",
+  GETSTOCKBALANCE = "getStockBalance",
 }

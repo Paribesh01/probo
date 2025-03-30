@@ -64,6 +64,7 @@ export const buyYesOption = (
   quantity: number,
   price: number
 ) => {
+  console.log("buy yes option");
   if (!validateOrder(userId, quantity, price, INR_BALANCE)) {
     return { error: "Invalid order" };
   }
@@ -186,6 +187,7 @@ export const buyNoOption = (
   quantity: number,
   price: number
 ) => {
+  console.log("buy no option");
   if (!validateOrder(userId, quantity, price, INR_BALANCE)) {
     return { error: "Invalid order" };
   }
@@ -374,6 +376,7 @@ export const sellYesOption = (
   quantity: number,
   price: number
 ) => {
+  console.log("sell yes option");
   if (!ORDERBOOK[stockSymbol]) {
     return { msg: "Invalid stock symbol" };
   }
@@ -450,6 +453,7 @@ export const sellNoOption = (
   quantity: number,
   price: number
 ) => {
+  console.log("sell no option");
   if (!ORDERBOOK[stockSymbol]) {
     return { msg: "Invalid stock symbol" };
   }

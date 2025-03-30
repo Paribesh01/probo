@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { processOrder } from "./utill/processOrder";
+import { ORDERBOOK, requestTypes } from "./types";
 
 export const pub = createClient();
 export const sub = createClient();
@@ -26,12 +27,19 @@ async function handleRequest() {
       continue;
     }
 
-    try {
-      const request = JSON.parse(data.element);
-      console.log("Parsed request:", request);
-      await processOrder(request);
-    } catch (error) {
-      console.error(" JSON Parsing Error:", error);
+    const request = JSON.parse(data.element);
+    console.log("Parsed request:", request);
+    await processOrder(request);
+
+    if (
+      request.type == requestTypes.BUYOPTIONS ||
+      request.type == requestTypes.SELLOPTIONS
+    ) {
+      for (const stockSymbol in ORDERBOOK) {
+        const channel = `orderbook.${stockSymbol}`;
+        await sub.publish(channel, JSON.stringify(ORDERBOOK[stockSymbol]));
+      }
+      console.log("Published orderbook");
     }
   }
 }

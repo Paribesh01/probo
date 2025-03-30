@@ -13,6 +13,7 @@ export const buyOptions = async (
   orderType: string
 ) => {
   let response;
+  console.log("order type is ____", orderType);
   if (orderType === "yes") {
     response = await buyYesOption(userId, stockSymbol, quantity, price);
   } else {

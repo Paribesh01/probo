@@ -7,7 +7,7 @@ import { handlePubSubWithTimeout } from "../utils/pubsubTimeout";
 export const buyOptions = async (req: Request, res: Response) => {
   try {
     console.log("Received request:", req.body);
-    const { userId, stockSymbol, quantity, price, orderType } = req.body;
+    const { userId, stockSymbol, quantity, price, stockType } = req.body;
     const id = uuidv4();
 
     if (!userId) {
@@ -35,12 +35,12 @@ export const buyOptions = async (req: Request, res: Response) => {
         stockSymbol,
         quantity,
         price,
-        orderType,
+        stockType,
       },
     };
 
     await pub.lPush("request", JSON.stringify(data));
-    const response = await handlePubSubWithTimeout(id, 10000);
+    const response = await handlePubSubWithTimeout(id, 5000);
 
     res.json(JSON.parse(response));
   } catch (err) {

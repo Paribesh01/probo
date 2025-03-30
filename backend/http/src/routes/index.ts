@@ -7,6 +7,8 @@ import { reset } from "../controller/reset";
 import { onrampInr } from "../controller/onRampInr";
 import { getInrBalance } from "../controller/getInrBalance";
 import { getOrderbook } from "../controller/getOrderBook";
+import { mintTrade } from "../controller/mintTrade";
+import { getStockBalance } from "../controller/getStockBalance";
 
 const routes = Router();
 
@@ -18,6 +20,8 @@ routes.post("/reset", reset);
 routes.post("/onramp/inr", onrampInr);
 routes.get("/balance/inr/:userId", getInrBalance);
 routes.get("/orderbook/:symbol", getOrderbook);
+routes.post("/trade/mint", mintTrade);
+routes.get("/balance/stock/:userId", getStockBalance);
 
 routes.get("/", (req, res) => {
   res.send("Hello World!");
