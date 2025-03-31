@@ -9,6 +9,7 @@ export enum requestTypes {
   GETORDERBOOK = "getOrderbook",
   MINTTRADE = "mintTrade",
   GETSTOCKBALANCE = "getStockBalance",
+  GETALLSYMBOL = "getAllSymbol",
 }
 
 export let ORDERBOOK: Record<string, OrderBook> = {};

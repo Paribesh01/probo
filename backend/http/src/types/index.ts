@@ -9,4 +9,5 @@ export enum requestTypes {
   GETORDERBOOK = "getOrderbook",
   MINTTRADE = "mintTrade",
   GETSTOCKBALANCE = "getStockBalance",
+  GETALLSYMBOL = "getAllSymbol",
 }

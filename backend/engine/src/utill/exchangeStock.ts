@@ -130,9 +130,7 @@ export const buyYesOption = (
 
       ORDERBOOK[stockSymbol].no[10 - price].orders[user].quantity -= toTake;
       ORDERBOOK[stockSymbol].no[10 - price].total -= toTake;
-      console.log("tempquant before in no ", tempQuantity);
       tempQuantity -= toTake;
-      console.log("tempquant after in no ", tempQuantity);
 
       if (ORDERBOOK[stockSymbol].no[10 - price].orders[user].type == "sell") {
         if (STOCK_BALANCE[user][stockSymbol].no) {

@@ -2,6 +2,7 @@ import { sub } from "..";
 import { buyOptions, sellOptions } from "../controllers/buySellOptions";
 import { createSymbol } from "../controllers/createSymbol";
 import { createUser } from "../controllers/createUser";
+import { getAllSymbol } from "../controllers/getAllSymbol";
 import { getInrBalance } from "../controllers/getInrBalance";
 import { getOrderbook } from "../controllers/getOrderBook";
 import { getStockBalance } from "../controllers/getStockBalance";
@@ -88,6 +89,11 @@ export const processOrder = async (request: any) => {
       console.log("Getting stock balance");
       const result10 = await getStockBalance(request.payload.userId);
       await sub.publish(request.id, JSON.stringify(result10));
+      break;
+    case requestTypes.GETALLSYMBOL:
+      console.log("Getting all symbol");
+      const result11 = await getAllSymbol();
+      await sub.publish(request.id, JSON.stringify(result11));
       break;
     default:
       console.log("Unknown request type");

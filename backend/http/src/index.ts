@@ -24,7 +24,7 @@ async function main() {
   } catch (err) {
     console.error("Error connecting to Redis:", err);
   }
-  app.listen(3000, () => {
+  app.listen(3001, () => {
     console.log("Server is running on port 3000");
   });
 }
