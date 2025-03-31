@@ -281,13 +281,13 @@ describe("Trading System Tests", () => {
     const buyer2Id = "buyer2";
     const buyer3Id = "buyer3";
     const symbol = "AAPL_USDT_20_Jan_2025_10_00";
-    const price = 850;
+    const price = 8.5;
     const quantity = 50;
 
-    await axios.post(`${HTTP_SERVER_URL}/user/create/${buyerId}`);
-    await axios.post(`${HTTP_SERVER_URL}/user/create/${buyer2Id}`);
-    await axios.post(`${HTTP_SERVER_URL}/user/create/${buyer3Id}`);
-    await axios.post(`${HTTP_SERVER_URL}/symbol/create/${symbol}`);
+    await axios.post(`${HTTP_SERVER_URL}/user/create`, { userId: buyerId });
+    await axios.post(`${HTTP_SERVER_URL}/user/create`, { userId: buyer2Id });
+    await axios.post(`${HTTP_SERVER_URL}/user/create`, { userId: buyer3Id });
+    await axios.post(`${HTTP_SERVER_URL}/symbol/create`, { symbol });
     await axios.post(`${HTTP_SERVER_URL}/onramp/inr`, {
       userId: buyerId,
       amount: 1000000,
@@ -331,17 +331,17 @@ describe("Trading System Tests", () => {
       userId: buyer3Id,
       stockSymbol: symbol,
       quantity: 2 * quantity + 30,
-      price: 1000 - price,
+      price: 10 - price,
       stockType: "no",
     });
 
-    console.log((1000 - price) * (2 * quantity + 30));
+    console.log((10 - price) * (2 * quantity + 30));
     const executionWsMessage = await promisified3;
     const message = JSON.parse(executionWsMessage.message);
 
     expect(executionWsMessage.event).toBe("event_orderbook_update");
-    expect(message.no?.[(1000 - price) / 100]).toBeUndefined();
-    expect(message.yes?.[price / 100]).toEqual({
+    expect(message.no?.[10 - price]).toBeUndefined();
+    expect(message.yes?.[price]).toEqual({
       total: 10,
       orders: {
         [buyer3Id]: {
@@ -361,13 +361,9 @@ describe("Trading System Tests", () => {
       `${HTTP_SERVER_URL}/balance/stock/${buyer3Id}`
     );
 
-    expect(buyerStockBalance.data.msg[symbol].yes.quantity).toBe(quantity);
-    expect(buyer2StockBalance.data.msg[symbol].yes.quantity).toBe(
-      quantity + 20
-    );
-    expect(buyer3StockBalance.data.msg[symbol].no.quantity).toBe(
-      2 * quantity + 20
-    );
+    expect(buyerStockBalance.data[symbol].yes.quantity).toBe(quantity);
+    expect(buyer2StockBalance.data[symbol].yes.quantity).toBe(quantity + 20);
+    expect(buyer3StockBalance.data[symbol].no.quantity).toBe(2 * quantity + 20);
 
     const buyerInrBalance = await axios.get(
       `${HTTP_SERVER_URL}/balance/inr/${buyerId}`
@@ -379,12 +375,12 @@ describe("Trading System Tests", () => {
       `${HTTP_SERVER_URL}/balance/inr/${buyer3Id}`
     );
 
-    expect(buyerInrBalance.data.msg.balance).toBe(1000000 - price * quantity);
-    expect(buyer2InrBalance.data.msg.balance).toBe(
+    expect(buyerInrBalance.data.balance).toBe(1000000 - price * quantity);
+    expect(buyer2InrBalance.data.balance).toBe(
       1000000 - price * (quantity + 20)
     );
-    expect(buyer3InrBalance.data.msg.balance).toBe(
-      1000000 - (1000 - price) * (2 * quantity + 30)
+    expect(buyer3InrBalance.data.balance).toBe(
+      1000000 - (10 - price) * (2 * quantity + 30)
     );
   }, 20000);
 
@@ -393,17 +389,17 @@ describe("Trading System Tests", () => {
     const seller2Id = "seller2";
     const seller3Id = "seller3";
     const symbol = "AAPL_USDT_20_Jan_2025_10_00";
-    const sell1Price = 750;
-    const sell2Price = 150;
-    const sell3Price = 250;
+    const sell1Price = 7.5;
+    const sell2Price = 1.5;
+    const sell3Price = 2.5;
     const quantity1 = 50;
     const quantity2 = 20;
     const quantity3 = 40;
 
-    await axios.post(`${HTTP_SERVER_URL}/user/create/${seller1Id}`);
-    await axios.post(`${HTTP_SERVER_URL}/user/create/${seller2Id}`);
-    await axios.post(`${HTTP_SERVER_URL}/user/create/${seller3Id}`);
-    await axios.post(`${HTTP_SERVER_URL}/symbol/create/${symbol}`);
+    await axios.post(`${HTTP_SERVER_URL}/user/create`, { userId: seller1Id });
+    await axios.post(`${HTTP_SERVER_URL}/user/create`, { userId: seller2Id });
+    await axios.post(`${HTTP_SERVER_URL}/user/create`, { userId: seller3Id });
+    await axios.post(`${HTTP_SERVER_URL}/symbol/create`, { symbol });
     await axios.post(`${HTTP_SERVER_URL}/trade/mint`, {
       userId: seller1Id,
       stockSymbol: symbol,
@@ -459,8 +455,8 @@ describe("Trading System Tests", () => {
     const message = JSON.parse(executionWsMessage.message);
 
     expect(executionWsMessage.event).toBe("event_orderbook_update");
-    expect(message.yes?.[sell1Price / 100]).toBeUndefined();
-    expect(message.no?.[sell3Price / 100]).toEqual({
+    expect(message.yes?.[sell1Price]).toBeUndefined();
+    expect(message.no?.[sell3Price]).toEqual({
       total: 10,
       orders: {
         [seller3Id]: {
@@ -480,9 +476,9 @@ describe("Trading System Tests", () => {
       `${HTTP_SERVER_URL}/balance/stock/${seller3Id}`
     );
 
-    expect(seller1StockBalace.data.msg[symbol].yes.quantity).toBe(50);
-    expect(seller2StockBalance.data.msg[symbol].no.quantity).toBe(80);
-    expect(seller3StockBalance.data.msg[symbol].no.quantity).toBe(60);
+    expect(seller1StockBalace.data[symbol].yes.quantity).toBe(50);
+    expect(seller2StockBalance.data[symbol].no.quantity).toBe(80);
+    expect(seller3StockBalance.data[symbol].no.quantity).toBe(60);
 
     const seller1InrBalance = await axios.get(
       `${HTTP_SERVER_URL}/balance/inr/${seller1Id}`
@@ -494,10 +490,8 @@ describe("Trading System Tests", () => {
       `${HTTP_SERVER_URL}/balance/inr/${seller3Id}`
     );
 
-    expect(seller1InrBalance.data.msg.balance).toBe(sell1Price * quantity1);
-    expect(seller2InrBalance.data.msg.balance).toBe(sell2Price * quantity2);
-    expect(seller3InrBalance.data.msg.balance).toBe(
-      sell3Price * (quantity3 - 10)
-    );
+    expect(seller1InrBalance.data.balance).toBe(sell1Price * quantity1);
+    expect(seller2InrBalance.data.balance).toBe(sell2Price * quantity2);
+    expect(seller3InrBalance.data.balance).toBe(sell3Price * (quantity3 - 10));
   }, 20000);
 });

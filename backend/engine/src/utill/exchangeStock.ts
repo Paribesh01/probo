@@ -69,8 +69,8 @@ export const buyYesOption = (
     return { error: "Invalid order" };
   }
 
-  INR_BALANCE[userId].balance -= quantity * price * 100;
-  INR_BALANCE[userId].locked += quantity * price * 100;
+  INR_BALANCE[userId].balance -= quantity * price;
+  INR_BALANCE[userId].locked += quantity * price;
 
   if (!ORDERBOOK[stockSymbol]) {
     return { msg: "Invalid stock symbol" };
@@ -104,14 +104,14 @@ export const buyYesOption = (
       if (ORDERBOOK[stockSymbol].yes[price].orders[user].type == "sell") {
         if (STOCK_BALANCE[user][stockSymbol].yes) {
           STOCK_BALANCE[user][stockSymbol].yes.locked -= toTake;
-          INR_BALANCE[user].balance += toTake * price * 100;
+          INR_BALANCE[user].balance += toTake * price;
         }
       } else if (
         ORDERBOOK[stockSymbol].yes[price].orders[user].type == "reverted"
       ) {
         if (STOCK_BALANCE[user][stockSymbol].no) {
           STOCK_BALANCE[user][stockSymbol].no.quantity += toTake;
-          INR_BALANCE[user].locked -= toTake * price * 100;
+          INR_BALANCE[user].locked -= toTake * price;
         }
       }
 
@@ -142,14 +142,14 @@ export const buyYesOption = (
       if (ORDERBOOK[stockSymbol].no[10 - price].orders[user].type == "sell") {
         if (STOCK_BALANCE[user][stockSymbol].no) {
           STOCK_BALANCE[user][stockSymbol].no.locked -= toTake;
-          INR_BALANCE[user].balance += toTake * (10 - price) * 100;
+          INR_BALANCE[user].balance += toTake * (10 - price);
         }
       } else if (
         ORDERBOOK[stockSymbol].no[10 - price].orders[user].type == "reverted"
       ) {
         if (STOCK_BALANCE[user][stockSymbol].yes) {
           STOCK_BALANCE[user][stockSymbol].yes.quantity += toTake;
-          INR_BALANCE[user].locked -= toTake * (10 - price) * 100;
+          INR_BALANCE[user].locked -= toTake * (10 - price);
         }
       }
 
@@ -173,7 +173,7 @@ export const buyYesOption = (
     STOCK_BALANCE[userId][stockSymbol].yes.quantity += quantity - tempQuantity;
   }
 
-  INR_BALANCE[userId].locked -= (quantity - tempQuantity) * price * 100;
+  INR_BALANCE[userId].locked -= (quantity - tempQuantity) * price;
 
   return {
     message: `Buy order for 'yes' added for ${stockSymbol}`,
@@ -192,8 +192,8 @@ export const buyNoOption = (
     return { error: "Invalid order" };
   }
 
-  INR_BALANCE[userId].balance -= quantity * price * 100;
-  INR_BALANCE[userId].locked += quantity * price * 100;
+  INR_BALANCE[userId].balance -= quantity * price;
+  INR_BALANCE[userId].locked += quantity * price;
 
   if (!ORDERBOOK[stockSymbol]) {
     return { msg: "Invalid stock symbol" };
@@ -247,7 +247,7 @@ export const buyNoOption = (
       if (ORDERBOOK[stockSymbol].no[price].orders[user].type == "sell") {
         if (STOCK_BALANCE[user][stockSymbol].no) {
           STOCK_BALANCE[user][stockSymbol].no.locked -= toTake;
-          INR_BALANCE[user].balance += toTake * 100 * price;
+          INR_BALANCE[user].balance += toTake * price;
         }
       } else if (
         ORDERBOOK[stockSymbol].no[price].orders[user].type == "reverted"
@@ -261,7 +261,7 @@ export const buyNoOption = (
         }
         if (STOCK_BALANCE[user][stockSymbol].yes) {
           STOCK_BALANCE[user][stockSymbol].yes.quantity += toTake;
-          INR_BALANCE[user].locked -= toTake * 100 * price;
+          INR_BALANCE[user].locked -= toTake * price;
           console.log(
             "stock balance of yes ",
             STOCK_BALANCE[user][stockSymbol].yes.quantity
@@ -325,14 +325,14 @@ export const buyNoOption = (
       if (ORDERBOOK[stockSymbol].yes[10 - price].orders[user].type == "sell") {
         if (STOCK_BALANCE[user][stockSymbol].yes) {
           STOCK_BALANCE[user][stockSymbol].yes.locked -= toTake;
-          INR_BALANCE[user].balance += toTake * 100 * (10 - price);
+          INR_BALANCE[user].balance += toTake * (10 - price);
         }
       } else if (
         ORDERBOOK[stockSymbol].yes[10 - price].orders[user].type == "reverted"
       ) {
         if (STOCK_BALANCE[user][stockSymbol].no) {
           STOCK_BALANCE[user][stockSymbol].no.quantity += toTake;
-          INR_BALANCE[user].locked -= toTake * 100 * (10 - price);
+          INR_BALANCE[user].locked -= toTake * (10 - price);
         }
       }
 
@@ -363,7 +363,7 @@ export const buyNoOption = (
     tempQuantity
   );
 
-  INR_BALANCE[userId].locked -= (quantity - tempQuantity) * price * 100;
+  INR_BALANCE[userId].locked -= (quantity - tempQuantity) * price;
 
   return {
     message: `Buy order for 'no' added for ${stockSymbol}`,
@@ -413,7 +413,7 @@ export const sellYesOption = (
         STOCK_BALANCE[user][stockSymbol].no.locked -= matchedQuantity;
       }
 
-      INR_BALANCE[user].balance += matchedQuantity * parseFloat(p) * 100;
+      INR_BALANCE[user].balance += matchedQuantity * parseFloat(p);
     }
 
     if (ORDERBOOK[stockSymbol].no[p].total === 0) {
@@ -421,7 +421,7 @@ export const sellYesOption = (
     }
   }
 
-  INR_BALANCE[userId].balance += (quantity - remainingQuantity) * price * 100;
+  INR_BALANCE[userId].balance += (quantity - remainingQuantity) * price;
   STOCK_BALANCE[userId][stockSymbol].yes.locked -= quantity - remainingQuantity;
 
   if (remainingQuantity > 0) {
@@ -490,7 +490,7 @@ export const sellNoOption = (
         STOCK_BALANCE[user][stockSymbol].yes.locked -= matchedQuantity;
       }
 
-      INR_BALANCE[user].balance += matchedQuantity * parseFloat(p) * 100;
+      INR_BALANCE[user].balance += matchedQuantity * parseFloat(p);
     }
 
     if (ORDERBOOK[stockSymbol].yes[p].total === 0) {
@@ -498,7 +498,7 @@ export const sellNoOption = (
     }
   }
 
-  INR_BALANCE[userId].balance += (quantity - remainingQuantity) * price * 100;
+  INR_BALANCE[userId].balance += (quantity - remainingQuantity) * price;
   STOCK_BALANCE[userId][stockSymbol].no.locked -= quantity - remainingQuantity;
 
   if (remainingQuantity > 0) {
