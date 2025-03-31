@@ -83,9 +83,6 @@ export const buyYesOption = (
     availableNoQuantity = ORDERBOOK[stockSymbol].no[10 - price]?.total || 0;
   }
 
-  console.log("available quant is ", availableQuantity);
-  console.log("availabel no quant is ", availableNoQuantity);
-
   let tempQuantity = quantity;
 
   if (availableQuantity > 0) {
@@ -97,9 +94,7 @@ export const buyYesOption = (
 
       ORDERBOOK[stockSymbol].yes[price].orders[user].quantity -= toTake;
       ORDERBOOK[stockSymbol].yes[price].total -= toTake;
-      console.log("tempquant before ", tempQuantity);
       tempQuantity -= toTake;
-      console.log("tempquant after ", tempQuantity);
 
       if (ORDERBOOK[stockSymbol].yes[price].orders[user].type == "sell") {
         if (STOCK_BALANCE[user][stockSymbol].yes) {
@@ -205,9 +200,6 @@ export const buyNoOption = (
     availableQuantity = ORDERBOOK[stockSymbol].no[price].total;
     availableYesQuantity = ORDERBOOK[stockSymbol].yes[10 - price]?.total || 0;
   }
-
-  console.log("availabe quantity is ", availableQuantity);
-  console.log("available yea quant is ", availableYesQuantity);
 
   let tempQuantity = quantity;
 
@@ -355,13 +347,6 @@ export const buyNoOption = (
   if (STOCK_BALANCE[userId][stockSymbol]?.no) {
     STOCK_BALANCE[userId][stockSymbol].no.quantity += quantity - tempQuantity;
   }
-
-  console.log(
-    "the quantity is ",
-    quantity,
-    " the remaingin tempquant is ",
-    tempQuantity
-  );
 
   INR_BALANCE[userId].locked -= (quantity - tempQuantity) * price;
 
