@@ -25,7 +25,7 @@ export default function Home() {
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </a>
-                  <a href="#">
+                  <a href="/trade">
                     <Button size="lg" variant="outline">
                       Trade Online
                     </Button>
