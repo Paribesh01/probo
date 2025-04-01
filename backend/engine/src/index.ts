@@ -31,16 +31,11 @@ async function handleRequest() {
     console.log("Parsed request:", request);
     await processOrder(request);
 
-    if (
-      request.type == requestTypes.BUYOPTIONS ||
-      request.type == requestTypes.SELLOPTIONS
-    ) {
-      for (const stockSymbol in ORDERBOOK) {
-        const channel = `orderbook.${stockSymbol}`;
-        await sub.publish(channel, JSON.stringify(ORDERBOOK[stockSymbol]));
-      }
-      console.log("Published orderbook");
+    for (const stockSymbol in ORDERBOOK) {
+      const channel = `orderbook.${stockSymbol}`;
+      await sub.publish(channel, JSON.stringify(ORDERBOOK[stockSymbol]));
     }
+    console.log("Published orderbook");
   }
 }
 
