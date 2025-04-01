@@ -167,6 +167,24 @@ export const buyYesOption = (
   }
 
   INR_BALANCE[userId].locked -= (quantity - tempQuantity) * price;
+  if (!STOCK_BALANCE[userId][stockSymbol].yes?.ordered) {
+    // @ts-ignore
+    STOCK_BALANCE[userId][stockSymbol].yes.ordered = {};
+  }
+
+  if (STOCK_BALANCE[userId][stockSymbol].yes?.ordered) {
+    if (!STOCK_BALANCE[userId][stockSymbol].yes?.ordered[price]) {
+      STOCK_BALANCE[userId][stockSymbol].yes.ordered[price] = {
+        total: 0,
+        orders: {},
+      };
+    }
+    STOCK_BALANCE[userId][stockSymbol].yes.ordered[price].total += tempQuantity;
+    STOCK_BALANCE[userId][stockSymbol].yes.ordered[price].orders[userId] = {
+      type: "sell",
+      quantity: tempQuantity,
+    };
+  }
 
   return {
     message: `Buy order for 'yes' added for ${stockSymbol}`,
@@ -348,6 +366,25 @@ export const buyNoOption = (
 
   INR_BALANCE[userId].locked -= (quantity - tempQuantity) * price;
 
+  if (!STOCK_BALANCE[userId][stockSymbol].no?.ordered) {
+    // @ts-ignore
+    STOCK_BALANCE[userId][stockSymbol].no.ordered = {};
+  }
+
+  if (STOCK_BALANCE[userId][stockSymbol].no?.ordered) {
+    if (!STOCK_BALANCE[userId][stockSymbol].no?.ordered[price]) {
+      STOCK_BALANCE[userId][stockSymbol].no.ordered[price] = {
+        total: 0,
+        orders: {},
+      };
+    }
+    STOCK_BALANCE[userId][stockSymbol].no.ordered[price].total += tempQuantity;
+    STOCK_BALANCE[userId][stockSymbol].no.ordered[price].orders[userId] = {
+      type: "sell",
+      quantity: tempQuantity,
+    };
+  }
+
   return {
     message: `Buy order for 'no' added for ${stockSymbol}`,
     orderbook: ORDERBOOK[stockSymbol],
@@ -360,10 +397,13 @@ export const sellYesOption = (
   price: number
 ) => {
   console.log("sell yes option");
+
+  // Check if stock symbol exists in ORDERBOOK
   if (!ORDERBOOK[stockSymbol]) {
     return { msg: "Invalid stock symbol" };
   }
 
+  // Check if user has sufficient 'yes' stocks to sell
   if (
     !STOCK_BALANCE[userId]?.[stockSymbol]?.yes ||
     STOCK_BALANCE[userId][stockSymbol].yes.quantity < quantity
@@ -371,12 +411,14 @@ export const sellYesOption = (
     return { error: 'Insufficient "yes" stocks to sell' };
   }
 
+  // Decrease the quantity of 'yes' stocks and increase the locked quantity
   STOCK_BALANCE[userId][stockSymbol].yes.quantity -= quantity;
   STOCK_BALANCE[userId][stockSymbol].yes.locked += quantity;
 
   let remainingQuantity = quantity;
   let opposingPrice = 10 - price;
 
+  // Loop through the ORDERBOOK to match orders
   for (let p in ORDERBOOK[stockSymbol].no) {
     if (remainingQuantity <= 0) break;
     if (parseFloat(p) > opposingPrice) continue;
@@ -388,30 +430,38 @@ export const sellYesOption = (
         ORDERBOOK[stockSymbol].no[p].orders[user].quantity;
       const matchedQuantity = Math.min(availableQuantity, remainingQuantity);
 
+      // Update matched orders in the ORDERBOOK
       ORDERBOOK[stockSymbol].no[p].orders[user].quantity -= matchedQuantity;
       ORDERBOOK[stockSymbol].no[p].total -= matchedQuantity;
       remainingQuantity -= matchedQuantity;
 
+      // Update stock balance for the user
       if (STOCK_BALANCE[user][stockSymbol].no) {
         STOCK_BALANCE[user][stockSymbol].no.locked -= matchedQuantity;
       }
 
+      // Update INR balance for the user
       INR_BALANCE[user].balance += matchedQuantity * parseFloat(p);
     }
 
+    // Clean up empty orders from ORDERBOOK
     if (ORDERBOOK[stockSymbol].no[p].total === 0) {
       delete ORDERBOOK[stockSymbol].no[p];
     }
   }
 
+  // Update user's INR balance and locked quantity for 'yes' stock
   INR_BALANCE[userId].balance += (quantity - remainingQuantity) * price;
   STOCK_BALANCE[userId][stockSymbol].yes.locked -= quantity - remainingQuantity;
 
+  // If there are remaining quantity to place in the ORDERBOOK
   if (remainingQuantity > 0) {
+    // Ensure the 'yes' price entry exists in the ORDERBOOK
     if (!ORDERBOOK[stockSymbol].yes[price]) {
       ORDERBOOK[stockSymbol].yes[price] = { total: 0, orders: {} };
     }
 
+    // Ensure the user has a 'sell' order entry for the price in the ORDERBOOK
     if (!ORDERBOOK[stockSymbol].yes[price].orders[userId]) {
       ORDERBOOK[stockSymbol].yes[price].orders[userId] = {
         quantity: 0,
@@ -419,6 +469,7 @@ export const sellYesOption = (
       };
     }
 
+    // Update the total and quantity of 'yes' orders for the user in the ORDERBOOK
     ORDERBOOK[stockSymbol].yes[price].total += remainingQuantity;
     ORDERBOOK[stockSymbol].yes[price].orders[userId].quantity +=
       remainingQuantity;
@@ -437,10 +488,13 @@ export const sellNoOption = (
   price: number
 ) => {
   console.log("sell no option");
+
+  // Check if stock symbol exists in ORDERBOOK
   if (!ORDERBOOK[stockSymbol]) {
     return { msg: "Invalid stock symbol" };
   }
 
+  // Check if user has sufficient 'no' stocks to sell
   if (
     !STOCK_BALANCE[userId]?.[stockSymbol]?.no ||
     STOCK_BALANCE[userId][stockSymbol].no.quantity < quantity
@@ -448,12 +502,14 @@ export const sellNoOption = (
     return { error: 'Insufficient "no" stocks to sell' };
   }
 
+  // Decrease the quantity of 'no' stocks and increase the locked quantity
   STOCK_BALANCE[userId][stockSymbol].no.quantity -= quantity;
   STOCK_BALANCE[userId][stockSymbol].no.locked += quantity;
 
   let remainingQuantity = quantity;
   let opposingPrice = 10 - price;
 
+  // Loop through the ORDERBOOK to match orders
   for (let p in ORDERBOOK[stockSymbol].yes) {
     if (remainingQuantity <= 0) break;
     if (parseFloat(p) > opposingPrice) continue;
@@ -465,30 +521,38 @@ export const sellNoOption = (
         ORDERBOOK[stockSymbol].yes[p].orders[user].quantity;
       const matchedQuantity = Math.min(availableQuantity, remainingQuantity);
 
+      // Update matched orders in the ORDERBOOK
       ORDERBOOK[stockSymbol].yes[p].orders[user].quantity -= matchedQuantity;
       ORDERBOOK[stockSymbol].yes[p].total -= matchedQuantity;
       remainingQuantity -= matchedQuantity;
 
+      // Update stock balance for the user
       if (STOCK_BALANCE[user][stockSymbol].yes) {
         STOCK_BALANCE[user][stockSymbol].yes.locked -= matchedQuantity;
       }
 
+      // Update INR balance for the user
       INR_BALANCE[user].balance += matchedQuantity * parseFloat(p);
     }
 
+    // Clean up empty orders from ORDERBOOK
     if (ORDERBOOK[stockSymbol].yes[p].total === 0) {
       delete ORDERBOOK[stockSymbol].yes[p];
     }
   }
 
+  // Update user's INR balance and locked quantity for 'no' stock
   INR_BALANCE[userId].balance += (quantity - remainingQuantity) * price;
   STOCK_BALANCE[userId][stockSymbol].no.locked -= quantity - remainingQuantity;
 
+  // If there are remaining quantity to place in the ORDERBOOK
   if (remainingQuantity > 0) {
+    // Ensure the 'no' price entry exists in the ORDERBOOK
     if (!ORDERBOOK[stockSymbol].no[price]) {
       ORDERBOOK[stockSymbol].no[price] = { total: 0, orders: {} };
     }
 
+    // Ensure the user has a 'sell' order entry for the price in the ORDERBOOK
     if (!ORDERBOOK[stockSymbol].no[price].orders[userId]) {
       ORDERBOOK[stockSymbol].no[price].orders[userId] = {
         quantity: 0,
@@ -496,6 +560,7 @@ export const sellNoOption = (
       };
     }
 
+    // Update the total and quantity of 'no' orders for the user in the ORDERBOOK
     ORDERBOOK[stockSymbol].no[price].total += remainingQuantity;
     ORDERBOOK[stockSymbol].no[price].orders[userId].quantity +=
       remainingQuantity;

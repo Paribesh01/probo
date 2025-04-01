@@ -32,6 +32,7 @@ export interface INRBalance {
 export interface StockOption {
   quantity: number;
   locked: number;
+  ordered?: Record<number, OrderEntry>;
 }
 
 export interface StockBalance {
