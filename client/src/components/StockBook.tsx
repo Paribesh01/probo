@@ -13,8 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// import { useSession } from "next-auth/react";
-
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
@@ -27,10 +25,6 @@ interface OrderBookItem {
 interface OrderBookData {
   yes: OrderBookItem[];
   no: OrderBookItem[];
-}
-
-interface WebSocketData {
-  orderbook: OrderBookData;
 }
 
 interface OrderBookProps {
@@ -98,8 +92,8 @@ export default function OrderBook({ eventId }: OrderBookProps) {
           }));
 
           setOrderBookData({ yes: yesOrders, no: noOrders });
-          //   setYesPrice(5);
-          //   setNoPrice(5);
+          setYesPrice(5);
+          setNoPrice(5);
         }
       } catch (error) {
         console.error("Error parsing WebSocket data:", error);
@@ -123,12 +117,17 @@ export default function OrderBook({ eventId }: OrderBookProps) {
     if (Number(tradeQuantity) <= 0) {
       return;
     }
+    // userId: buyer2Id,
+    // stockSymbol: symbol,
+    // quantity: quantity + 20,
+    // price,
+    // stockType: "yes",
     const response = await axios.post(
-      `http://localhost:3000/v1/event/initiate`,
+      `http://localhost:3001/api/v1/order/buy`,
       {
         userId,
-        eventId: eventId,
-        side: side,
+        stockSymbol: eventId,
+        stockType: side,
         quantity: Number(tradeQuantity),
         price: Number(tradePrice),
       }
@@ -141,25 +140,21 @@ export default function OrderBook({ eventId }: OrderBookProps) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-4">
+    <div className="min-h-screen   p-4">
       <h1 className="text-3xl font-bold text-center mb-6 mt-1">{title}</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="md:col-span-2 bg-black border border-gray-800">
+        <Card className="md:col-span-2  border border-gray-800">
           <CardHeader>
-            <CardTitle className="text-white">Order Book</CardTitle>
+            <CardTitle>Order Book</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow className="border-b border-gray-800">
-                  <TableHead className="text-white font-sans">PRICE</TableHead>
-                  <TableHead className="text-white font-sans">
-                    QTY AT YES
-                  </TableHead>
-                  <TableHead className="text-white font-sans">PRICE</TableHead>
-                  <TableHead className="text-white font-sans">
-                    QTY AT NO
-                  </TableHead>
+                <TableRow className="border-b ">
+                  <TableHead className=" font-sans">PRICE</TableHead>
+                  <TableHead className=" font-sans">QTY AT YES</TableHead>
+                  <TableHead className=" font-sans">PRICE</TableHead>
+                  <TableHead className=" font-sans">QTY AT NO</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -182,10 +177,7 @@ export default function OrderBook({ eventId }: OrderBookProps) {
                       const noItem = noItems[index];
                       console.log("*********", noItem);
                       return (
-                        <TableRow
-                          key={index}
-                          className="border-b border-gray-800"
-                        >
+                        <TableRow key={index} className="border-b  ">
                           <TableCell className="text-blue-500 font-semibold">
                             {yesItem.price}
                           </TableCell>
@@ -243,16 +235,16 @@ export default function OrderBook({ eventId }: OrderBookProps) {
             </Table>
           </CardContent>
         </Card>
-        <Card className="bg-black border border-gray-800">
+        <Card className=" border border-gray-800">
           <CardHeader>
-            <CardTitle className="text-white">Place Order</CardTitle>
+            <CardTitle className="">Place Order</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex justify-between mb-4">
               <Button
                 variant={side === "YES" ? "default" : "outline"}
                 onClick={() => setSide("YES")}
-                className={`bg-blue-500 text-white hover:bg-blue-600 ${
+                className={`bg-blue-500  hover:bg-blue-600 ${
                   side === "YES" ? "ring-2 ring-blue-400" : ""
                 }`}
               >
@@ -261,7 +253,7 @@ export default function OrderBook({ eventId }: OrderBookProps) {
               <Button
                 variant={side === "NO" ? "default" : "outline"}
                 onClick={() => setSide("NO")}
-                className={`bg-red-500 text-white hover:bg-red-600 ${
+                className={`bg-red-500  hover:bg-red-600 ${
                   side === "NO" ? "ring-2 ring-red-400" : ""
                 }`}
               >
@@ -272,7 +264,7 @@ export default function OrderBook({ eventId }: OrderBookProps) {
               <div>
                 <label
                   htmlFor="trade-price"
-                  className="block text-sm font-medium text-white"
+                  className="block text-sm font-medium "
                 >
                   Price
                 </label>
@@ -281,14 +273,14 @@ export default function OrderBook({ eventId }: OrderBookProps) {
                   type="number"
                   value={tradePrice}
                   onChange={(e) => setTradePrice(e.target.value)}
-                  className="mt-1 bg-gray-900 text-white border-gray-700"
+                  className="mt-1   border-gray-700"
                 />
                 <p className="text-sm text-gray-400">0 qty available</p>
               </div>
               <div>
                 <label
                   htmlFor="trade-quantity"
-                  className="block text-sm font-medium text-white"
+                  className="block text-sm font-medium "
                 >
                   Quantity
                 </label>
@@ -297,7 +289,7 @@ export default function OrderBook({ eventId }: OrderBookProps) {
                   type="number"
                   value={tradeQuantity}
                   onChange={(e) => setTradeQuantity(e.target.value)}
-                  className="mt-1 bg-gray-900 text-white border-gray-700"
+                  className="mt-1   border-gray-700"
                 />
               </div>
               <div className="flex justify-between">
@@ -314,7 +306,7 @@ export default function OrderBook({ eventId }: OrderBookProps) {
               </div>
               <Button
                 onClick={handleTrade}
-                className={`w-full text-white ${
+                className={`w-full  ${
                   side === "YES"
                     ? "bg-blue-500 hover:bg-blue-600"
                     : "bg-red-500 hover:bg-red-600"
