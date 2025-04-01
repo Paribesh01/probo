@@ -12,9 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import LineChart from "@/components/ui/line-chart";
-
-import { ArrowUpDown } from "lucide-react";
 
 // import { useSession } from "next-auth/react";
 
