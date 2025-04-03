@@ -16,7 +16,7 @@ RUN npm install -g typescript ts-node
 COPY . .
 
 
-RUN npm run build  # Ensure "build": "tsc" exists in package.json
+RUN npm run build 
 
 
 FROM node:18-alpine
