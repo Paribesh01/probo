@@ -26,14 +26,14 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./backend/engine/Dockerfile
+          file: ./backend/engine
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/probo-engine:latest
 
       - name: Build and push Probo HTTP Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./backend/http/Dockerfile
+          context: ./backend/http
           file: ./probo-http/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/probo-http:latest
@@ -41,7 +41,7 @@ jobs:
       - name: Build and push Probo WebSocket Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./backend/ws/Dockerfile
+          context: ./backend/ws
           file: ./probo-ws/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/probo-ws:latest
