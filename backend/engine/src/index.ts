@@ -2,8 +2,8 @@ import { createClient } from "redis";
 import { processOrder } from "./utill/processOrder";
 import { ORDERBOOK, requestTypes } from "./types";
 
-export const pub = createClient();
-export const sub = createClient();
+export const pub = createClient({ url: "redis://redis:6379" });
+export const sub = createClient({ url: "redis://redis:6379" });
 
 async function main() {
   try {

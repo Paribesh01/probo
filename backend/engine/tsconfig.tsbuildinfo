@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/types/index.ts","./src/utill/processorder.ts"],"version":"5.7.2"}
+{"root":["./src/index.ts","./src/controllers/buyselloptions.ts","./src/controllers/createsymbol.ts","./src/controllers/createuser.ts","./src/controllers/getallsymbol.ts","./src/controllers/getinrbalance.ts","./src/controllers/getorderbook.ts","./src/controllers/getstockbalance.ts","./src/controllers/minttrade.ts","./src/controllers/rampinr.ts","./src/controllers/reset.ts","./src/types/index.ts","./src/utill/exchangestock.ts","./src/utill/processorder.ts"],"version":"5.7.2"}

@@ -5,8 +5,8 @@ import { createClient } from "redis";
 const app = express();
 const httpServer = app.listen(8085);
 const wss = new WebSocketServer({ server: httpServer });
-const redisClient = createClient();
-const redisPublisher = createClient();
+const redisClient = createClient({ url: "redis://redis:6379" });
+const redisPublisher = createClient({ url: "redis://redis:6379" });
 
 const subscriptions = new Map<
   string,
