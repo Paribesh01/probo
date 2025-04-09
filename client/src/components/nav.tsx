@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const Header = () => {
@@ -26,7 +26,7 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           <Link
-            href="/markets"
+            href="/market"
             className="text-sm font-medium hover:text-primary transition-colors"
           >
             Markets
@@ -44,10 +44,22 @@ const Header = () => {
               className="w-full rounded-md bg-muted px-8 py-2 text-sm"
             />
           </div>
-          {data?.user ? (
-            <Button>Sign In</Button>
+          {!data?.user ? (
+            <Button
+              onClick={() => {
+                signIn();
+              }}
+            >
+              Sign In
+            </Button>
           ) : (
-            <Button onClick={() => {}}>Logout</Button>
+            <Button
+              onClick={() => {
+                signOut();
+              }}
+            >
+              Logout
+            </Button>
           )}
         </nav>
 
@@ -82,7 +94,7 @@ const Header = () => {
       {isOpen && (
         <div className="md:hidden px-4 py-3 space-y-3 shadow-md bg-card animate-fade-in">
           <Link
-            href="/markets"
+            href="/market"
             className="block py-2 text-sm font-medium"
             onClick={() => setIsOpen(false)}
           >
@@ -102,7 +114,25 @@ const Header = () => {
               className="w-full rounded-md bg-muted px-8 py-2 text-sm"
             />
           </div>
-          <Button className="w-full">Sign In</Button>
+          {!data?.user ? (
+            <Button
+              className="w-full"
+              onClick={() => {
+                signIn();
+              }}
+            >
+              Sign In
+            </Button>
+          ) : (
+            <Button
+              className="w-full"
+              onClick={() => {
+                signOut();
+              }}
+            >
+              Logout
+            </Button>
+          )}{" "}
         </div>
       )}
     </header>

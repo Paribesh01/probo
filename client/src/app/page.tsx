@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import Layout from "@/components/Layout";
 import { ArrowRight, BarChart2, CreditCard, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
@@ -29,7 +28,7 @@ const LandingPage = () => {
               style={{ animationDelay: "0.2s" }}
             >
               <Button size="lg" asChild>
-                <Link href="/markets">Get Started</Link>
+                <Link href="/market">Get Started</Link>
               </Button>
               <Button size="lg" variant="outline">
                 Download App
@@ -88,7 +87,7 @@ const LandingPage = () => {
           </div>
           <div className="text-center mt-12">
             <Button asChild>
-              <Link href="/markets" className="flex items-center">
+              <Link href="/market" className="flex items-center">
                 View Markets <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -182,7 +181,7 @@ const LandingPage = () => {
               predictions into profits.
             </p>
             <Button size="lg">
-              <Link href="/markets">Create an Account</Link>
+              <Link href="/market">Create an Account</Link>
             </Button>
           </div>
         </div>

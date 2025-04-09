@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: engine-server
+  template:
+    metadata:
+      labels:
+        app: engine-server
+    spec:
+      containers:
+        - name: engine-server
+          image: paribeshn/probo-engine
+
+          env:
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
