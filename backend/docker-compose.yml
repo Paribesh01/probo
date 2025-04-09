@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   redis:
     image: redis:alpine
@@ -10,28 +12,39 @@ services:
     build:
       context: ./ws
       dockerfile: Dockerfile
+    volumes:
+      - ./ws:/app # Mount source code
+      - /app/node_modules # Avoid node_modules overwrite
     depends_on:
       - redis
     restart: unless-stopped
-
     ports:
       - "8085:8085"
+    command: npm run dev # Replace with your entry file
 
   engine-server:
     build:
       context: ./engine
       dockerfile: Dockerfile
+    volumes:
+      - ./engine:/app
+      - /app/node_modules
     depends_on:
       - redis
       - ws-server
     restart: unless-stopped
+    command: npm run dev # Replace with your entry file
 
   express-server:
     build:
       context: ./http
       dockerfile: Dockerfile
+    volumes:
+      - ./http:/app
+      - /app/node_modules
     depends_on:
       - redis
     restart: unless-stopped
     ports:
       - "3001:3001"
+    command: npm run dev # Replace with your entry file

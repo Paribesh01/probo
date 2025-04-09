@@ -10,7 +10,7 @@ COPY package*.json ./
 RUN npm install
 
 
-RUN npm install -g typescript ts-node
+RUN npm install --save-dev ts-node typescript nodemon
 
 
 COPY . .
