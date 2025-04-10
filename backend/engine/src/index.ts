@@ -29,6 +29,7 @@ async function handleRequest() {
 
     const request = JSON.parse(data.element);
     console.log("Parsed request:", request);
+
     await processOrder(request);
 
     for (const stockSymbol in ORDERBOOK) {

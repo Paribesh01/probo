@@ -10,6 +10,7 @@ export enum requestTypes {
   MINTTRADE = "mintTrade",
   GETSTOCKBALANCE = "getStockBalance",
   GETALLSYMBOL = "getAllSymbol",
+  GET = "get",
 }
 
 export let ORDERBOOK: Record<string, OrderBook> = {};
@@ -53,4 +54,5 @@ export interface OrderEntry {
 export interface OrderBook {
   yes: Record<number, OrderEntry>;
   no: Record<number, OrderEntry>;
+  lastYesPrice: number;
 }

@@ -81,7 +81,7 @@ const SingleStockPage = () => {
   const [position, setPosition] = useState<"YES" | "NO">("YES");
 
   const { data: session } = useSession();
-
+  const [yesPrice, setYesPrice] = useState<number>(0);
   const [orderBookData, setOrderBookData] = useState<any>(null);
   const [title, setTitle] = useState("");
   // const [description, setDescription] = useState("");
@@ -93,9 +93,7 @@ const SingleStockPage = () => {
   // const [timeSeries, setTimeSeries] = useState<string[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [side, setSide] = useState<"YES" | "NO">("YES");
-  const [tradePrice, setTradePrice] = useState("");
-  const [tradeQuantity, setTradeQuantity] = useState("");
+  const [tradePrice, setTradePrice] = useState(5);
   const userId = session?.user?.id;
 
   const formatOrderBook = (data: any) => {
@@ -113,7 +111,7 @@ const SingleStockPage = () => {
       const noData = data.no?.[priceStr];
 
       result.push({
-        price: `$${(price / 10).toFixed(2)}`, // If price is in 10s (like 8 -> 0.80)
+        price: `$${price.toFixed(2)}`, // If price is in 10s (like 8 -> 0.80)
         yes: yesData?.total || 0,
         no: noData?.total || 0,
       });
@@ -133,6 +131,7 @@ const SingleStockPage = () => {
     const ws = new WebSocket("ws://localhost:8085");
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: "subscribe", stockSymbol: symbol }));
+      axios.get(`http://localhost:3001/api/v1/get`);
       console.log("WebSocket connection opened.");
     };
     ws.onmessage = (event: MessageEvent) => {
@@ -151,6 +150,7 @@ const SingleStockPage = () => {
 
         const result = formatOrderBook(orderData);
         setOrderBookData(result);
+        setYesPrice(orderData.lastYesPrice);
       } catch (error) {
         console.error("Error parsing WebSocket data:", error);
       }
@@ -167,7 +167,7 @@ const SingleStockPage = () => {
   }, [orderBookData]);
 
   async function handleTrade() {
-    if (Number(tradeQuantity) <= 0) {
+    if (Number(quantity) <= 0) {
       return;
     }
     // userId: buyer2Id,
@@ -180,8 +180,8 @@ const SingleStockPage = () => {
       {
         userId,
         stockSymbol: symbol,
-        stockType: side,
-        quantity: Number(tradeQuantity),
+        stockType: position,
+        quantity: Number(quantity),
         price: Number(tradePrice),
       }
     );
@@ -193,20 +193,7 @@ const SingleStockPage = () => {
   }
 
   // Calculate costs based on current price and quantity
-  const cost =
-    position === "YES"
-      ? (marketData.yesPrice * quantity).toFixed(2)
-      : (marketData.noPrice * quantity).toFixed(2);
-
-  // Format trends for display
-  const yesTrendFormatted =
-    marketData.yesTrend > 0
-      ? `+${marketData.yesTrend}%`
-      : `${marketData.yesTrend}%`;
-  const noTrendFormatted =
-    marketData.noTrend > 0
-      ? `+${marketData.noTrend}%`
-      : `${marketData.noTrend}%`;
+  const cost = (tradePrice * quantity).toFixed(2);
 
   return (
     <>
@@ -219,21 +206,6 @@ const SingleStockPage = () => {
             <div className="flex items-center text-sm text-muted-foreground">
               <Clock className="h-4 w-4 mr-1" />
               <span>Closes: {marketData.endTime}</span>
-            </div>
-
-            <div className="flex gap-4">
-              <span className="text-sm">
-                24h Volume:{" "}
-                <span className="font-medium">
-                  ${marketData.volume24h.toLocaleString()}
-                </span>
-              </span>
-              <span className="text-sm">
-                Liquidity:{" "}
-                <span className="font-medium">
-                  ${marketData.liquidity.toLocaleString()}
-                </span>
-              </span>
             </div>
 
             <div className="ml-auto">
@@ -315,24 +287,9 @@ const SingleStockPage = () => {
                       YES PRICE
                     </p>
                     <p className="text-2xl font-bold text-market-yes">
-                      ${marketData.yesPrice.toFixed(2)}
+                      ${yesPrice.toFixed(2)}
                     </p>
-                    <div className="flex items-center justify-center">
-                      <span
-                        className={`text-xs ${
-                          marketData.yesTrend >= 0
-                            ? "text-market-yes"
-                            : "text-market-no"
-                        } flex items-center`}
-                      >
-                        {marketData.yesTrend >= 0 ? (
-                          <TrendingUp className="h-3 w-3 mr-1" />
-                        ) : (
-                          <TrendingDown className="h-3 w-3 mr-1" />
-                        )}
-                        {yesTrendFormatted}
-                      </span>
-                    </div>
+                    <div className="flex items-center justify-center"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -346,24 +303,9 @@ const SingleStockPage = () => {
                       NO PRICE
                     </p>
                     <p className="text-2xl font-bold text-market-no">
-                      ${marketData.noPrice.toFixed(2)}
+                      ${(10 - yesPrice).toFixed(2)}
                     </p>
-                    <div className="flex items-center justify-center">
-                      <span
-                        className={`text-xs ${
-                          marketData.noTrend >= 0
-                            ? "text-market-yes"
-                            : "text-market-no"
-                        } flex items-center`}
-                      >
-                        {marketData.noTrend >= 0 ? (
-                          <TrendingUp className="h-3 w-3 mr-1" />
-                        ) : (
-                          <TrendingDown className="h-3 w-3 mr-1" />
-                        )}
-                        {noTrendFormatted}
-                      </span>
-                    </div>
+                    <div className="flex items-center justify-center"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -414,8 +356,8 @@ const SingleStockPage = () => {
                       <span className="text-sm text-muted-foreground">
                         Current Price: $
                         {position === "YES"
-                          ? marketData.yesPrice.toFixed(2)
-                          : marketData.noPrice.toFixed(2)}
+                          ? yesPrice.toFixed(2)
+                          : (10 - yesPrice).toFixed(2)}
                       </span>
                     </div>
                     <input
@@ -431,6 +373,25 @@ const SingleStockPage = () => {
                       <span className="text-sm">10</span>
                       <span className="text-lg font-medium">{quantity}</span>
                       <span className="text-sm">100</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <label className="text-sm font-medium">Price:</label>
+                    </div>
+                    <input
+                      type="range"
+                      min={1}
+                      max={10}
+                      step={1}
+                      value={tradePrice}
+                      onChange={(e) => setTradePrice(parseInt(e.target.value))}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between mt-1">
+                      <span className="text-sm">1</span>
+                      <span className="text-lg font-medium">{tradePrice}</span>
+                      <span className="text-sm">10</span>
                     </div>
                   </div>
 
@@ -455,16 +416,13 @@ const SingleStockPage = () => {
                     <div className="flex justify-between">
                       <span className="text-sm">Potential Profit:</span>
                       <span className="text-sm font-medium text-market-yes">
-                        ${(quantity - parseFloat(cost)).toFixed(2)}
+                        ${(quantity * 10 - parseFloat(cost)).toFixed(2)}
                       </span>
                     </div>
                   </div>
 
-                  <Button className="w-full" size="lg">
-                    Buy {quantity} {position} @ $
-                    {position === "YES"
-                      ? marketData.yesPrice.toFixed(2)
-                      : marketData.noPrice.toFixed(2)}
+                  <Button className="w-full" onClick={handleTrade} size="lg">
+                    Buy {quantity} {position} @ ${tradePrice.toFixed(2)}
                   </Button>
                 </div>
               </CardContent>

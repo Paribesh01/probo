@@ -90,6 +90,10 @@ export const processOrder = async (request: any) => {
       const result10 = await getStockBalance(request.payload.userId);
       await sub.publish(request.id, JSON.stringify(result10));
       break;
+    case requestTypes.GET:
+      console.log("Getting");
+      await sub.publish(request.id, JSON.stringify("getting"));
+      break;
     case requestTypes.GETALLSYMBOL:
       console.log("Getting all symbol");
       const result11 = await getAllSymbol();

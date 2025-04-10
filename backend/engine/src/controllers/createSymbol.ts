@@ -5,6 +5,7 @@ export const createSymbol = async (stockSymbol: string) => {
     ORDERBOOK[stockSymbol] = {
       yes: {},
       no: {},
+      lastYesPrice: 5,
     };
 
     return ORDERBOOK[stockSymbol];

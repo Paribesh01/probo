@@ -27,7 +27,6 @@ const MarketCard = ({
   symbol,
   category,
   yesPrice,
-  noPrice,
   //   yesTrend,
   //   noTrend,
   //   endTime,
@@ -75,7 +74,7 @@ const MarketCard = ({
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">NO</p>
               <p className="text-lg font-semibold text-market-no">
-                ${noPrice.toFixed(2)}
+                ${(10 - yesPrice).toFixed(2)}
               </p>
               <div className="flex items-center">
                 {/* <span
