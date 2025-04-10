@@ -34,7 +34,10 @@ async function handleRequest() {
 
     for (const stockSymbol in ORDERBOOK) {
       const channel = `orderbook.${stockSymbol}`;
-      await sub.publish(channel, JSON.stringify(ORDERBOOK[stockSymbol]));
+      await sub.publish(
+        channel,
+        JSON.stringify({ stockSymbol, ...ORDERBOOK[stockSymbol] })
+      );
     }
     console.log("Published orderbook");
   }

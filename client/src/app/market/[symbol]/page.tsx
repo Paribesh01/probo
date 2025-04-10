@@ -1,18 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Clock,
-  TrendingUp,
-  TrendingDown,
-  ChevronUp,
-  ChevronDown,
-  MessageSquare,
-  Share2,
-} from "lucide-react";
+import { Clock, Share2 } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -28,21 +18,6 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 
-// Mock data for order book/trading volume at different price points
-const orderBookData = [
-  { price: "$0.10", yes: 250, no: 50 },
-  { price: "$0.20", yes: 320, no: 120 },
-  { price: "$0.30", yes: 400, no: 180 },
-  { price: "$0.40", yes: 280, no: 240 },
-  { price: "$0.50", yes: 450, no: 280 },
-  { price: "$0.60", yes: 600, no: 320 },
-  { price: "$0.70", yes: 750, no: 230 },
-  { price: "$0.80", yes: 350, no: 180 },
-  { price: "$0.90", yes: 250, no: 120 },
-  { price: "$1.00", yes: 150, no: 80 },
-];
-
-// Mock market data
 const marketData = {
   id: "2",
   title: "Will the Federal Reserve cut interest rates in Q2 2024?",
@@ -84,13 +59,7 @@ const SingleStockPage = () => {
   const [yesPrice, setYesPrice] = useState<number>(0);
   const [orderBookData, setOrderBookData] = useState<any>(null);
   const [title, setTitle] = useState("");
-  // const [description, setDescription] = useState("");
-  // const [yesPrice, setYesPrice] = useState<number>(0);
-  // const [noPrice, setNoPrice] = useState<number>(0);
-  // const [showYesData, setShowYesData] = useState<boolean>(true);
-  // const [yesProbability, setYesProbability] = useState<number[]>([]);
-  // const [noProbability, setNoProbability] = useState<number[]>([]);
-  // const [timeSeries, setTimeSeries] = useState<string[]>([]);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [tradePrice, setTradePrice] = useState(5);
@@ -429,45 +398,6 @@ const SingleStockPage = () => {
             </Card>
 
             {/* Related Markets */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Related Markets</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="border-b border-border pb-2">
-                    <p className="font-medium text-sm">
-                      Will US inflation rate be below 3% in Q2 2024?
-                    </p>
-                    <div className="flex justify-between text-xs mt-1">
-                      <span className="text-market-yes">YES: $0.58</span>
-                      <span className="text-market-no">NO: $0.42</span>
-                    </div>
-                  </div>
-
-                  <div className="border-b border-border pb-2">
-                    <p className="font-medium text-sm">
-                      Will the S&P 500 reach an all-time high in Q2 2024?
-                    </p>
-                    <div className="flex justify-between text-xs mt-1">
-                      <span className="text-market-yes">YES: $0.75</span>
-                      <span className="text-market-no">NO: $0.25</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="font-medium text-sm">
-                      Will the Federal Reserve cut interest rates before July
-                      2024?
-                    </p>
-                    <div className="flex justify-between text-xs mt-1">
-                      <span className="text-market-yes">YES: $0.65</span>
-                      <span className="text-market-no">NO: $0.35</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
