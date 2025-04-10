@@ -194,13 +194,15 @@ const ProfilePage = () => {
                           <h4 className="text-sm font-medium mb-1">
                             Ordered YES
                           </h4>
-                          {Object.entries(data.yes.ordered).map(
-                            ([price, orderDetails]: any) => (
-                              <p key={price} className="text-xs">
-                                ₹{price} → Qty: {orderDetails.total}
-                              </p>
-                            )
-                          )}
+                          {data.yes.ordered &&
+                            Object.entries(data.yes.ordered).map(
+                              ([price, orderDetails]: any) => (
+                                <p key={price} className="text-xs">
+                                  ₹{price} → Qty: {orderDetails.qty}
+                                </p>
+                              )
+                            )}
+
                           <h4 className="text-sm font-medium mt-2 mb-1">
                             Ordered NO
                           </h4>
