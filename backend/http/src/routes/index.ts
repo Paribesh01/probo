@@ -10,6 +10,7 @@ import { getOrderbook } from "../controller/getOrderBook";
 import { mintTrade } from "../controller/mintTrade";
 import { getStockBalance } from "../controller/getStockBalance";
 import { getAllSymbol } from "../controller/getAllSymbol";
+import { get } from "../controller/get";
 
 const routes = Router();
 
@@ -24,6 +25,7 @@ routes.get("/orderbook/:symbol", getOrderbook);
 routes.post("/trade/mint", mintTrade);
 routes.get("/balance/stock/:userId", getStockBalance);
 routes.get("/symbol/all", getAllSymbol);
+routes.get("/get", get);
 
 routes.get("/", (req, res) => {
   res.send("Hello World!");

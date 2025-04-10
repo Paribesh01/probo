@@ -185,6 +185,9 @@ export const buyYesOption = (
       quantity: tempQuantity,
     };
   }
+  if (quantity - tempQuantity > 0) {
+    ORDERBOOK[stockSymbol].lastYesPrice = price;
+  }
 
   return {
     message: `Buy order for 'yes' added for ${stockSymbol}`,
@@ -384,6 +387,9 @@ export const buyNoOption = (
       quantity: tempQuantity,
     };
   }
+  if (quantity - tempQuantity > 0) {
+    ORDERBOOK[stockSymbol].lastYesPrice = 10 - price;
+  }
 
   return {
     message: `Buy order for 'no' added for ${stockSymbol}`,
@@ -434,6 +440,9 @@ export const sellYesOption = (
       ORDERBOOK[stockSymbol].no[p].orders[user].quantity -= matchedQuantity;
       ORDERBOOK[stockSymbol].no[p].total -= matchedQuantity;
       remainingQuantity -= matchedQuantity;
+      if (matchedQuantity > 0) {
+        ORDERBOOK[stockSymbol].lastYesPrice = price;
+      }
 
       // Update stock balance for the user
       if (STOCK_BALANCE[user][stockSymbol].no) {
@@ -473,6 +482,7 @@ export const sellYesOption = (
     ORDERBOOK[stockSymbol].yes[price].total += remainingQuantity;
     ORDERBOOK[stockSymbol].yes[price].orders[userId].quantity +=
       remainingQuantity;
+    ORDERBOOK[stockSymbol].lastYesPrice = price;
   }
 
   return {
@@ -527,12 +537,15 @@ export const sellNoOption = (
       remainingQuantity -= matchedQuantity;
 
       // Update stock balance for the user
-      if (STOCK_BALANCE[user][stockSymbol].yes) {
+      if (STOCK_BALANCE[user]?.[stockSymbol]?.yes) {
         STOCK_BALANCE[user][stockSymbol].yes.locked -= matchedQuantity;
       }
 
       // Update INR balance for the user
       INR_BALANCE[user].balance += matchedQuantity * parseFloat(p);
+
+      // ✅ Update lastYesPrice
+      ORDERBOOK[stockSymbol].lastYesPrice = 10 - price;
     }
 
     // Clean up empty orders from ORDERBOOK

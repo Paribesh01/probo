@@ -1,6 +1,5 @@
 import { createClient } from "redis";
-import { processOrder } from "./utill/processOrder";
-import { ORDERBOOK, requestTypes } from "./types";
+import { processOrder } from "./utils";
 
 export const pub = createClient({ url: "redis://redis:6379" });
 export const sub = createClient({ url: "redis://redis:6379" });
@@ -18,7 +17,7 @@ async function main() {
 async function handleRequest() {
   console.log("Listening for requests...");
   while (true) {
-    const data = await pub.brPop("request", 0);
+    const data = await pub.brPop("db", 0);
 
     console.log("📩 Received raw data:", data);
 
@@ -29,17 +28,7 @@ async function handleRequest() {
 
     const request = JSON.parse(data.element);
     console.log("Parsed request:", request);
-
     await processOrder(request);
-
-    for (const stockSymbol in ORDERBOOK) {
-      const channel = `orderbook.${stockSymbol}`;
-      await sub.publish(
-        channel,
-        JSON.stringify({ stockSymbol, ...ORDERBOOK[stockSymbol] })
-      );
-    }
-    console.log("Published orderbook");
   }
 }
 

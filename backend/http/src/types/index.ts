@@ -10,4 +10,5 @@ export enum requestTypes {
   MINTTRADE = "mintTrade",
   GETSTOCKBALANCE = "getStockBalance",
   GETALLSYMBOL = "getAllSymbol",
+  GET = "get",
 }

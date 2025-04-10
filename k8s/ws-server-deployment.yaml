@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ws-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ws-server
+  template:
+    metadata:
+      labels:
+        app: ws-server
+    spec:
+      containers:
+        - name: ws-server
+          image: paribeshn/probo-ws
+          ports:
+            - containerPort: 8085
+          env:
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ws-server
+spec:
+  selector:
+    app: ws-server
+  ports:
+    - protocol: TCP
+      port: 8085
+      targetPort: 8085
+  type: ClusterIP # Internal only
